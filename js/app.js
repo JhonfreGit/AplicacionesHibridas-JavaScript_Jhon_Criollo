@@ -1,7 +1,9 @@
-var operacion = 0;
-var operador = 0;
-var botonOperacion = true;
+var resultadoOperacion = 0;
+var primerNumero = 0;
+var segundoNumero = 0;
+var operacion = false;
 var tipoOperacion = "";
+var cantOper = 0;
 
 var Calculadora = ( function(){
   var sumar = function( n1, n2 ){
@@ -73,75 +75,99 @@ function ampliarImagen(id){
 
 function display(alt){
   if(alt=="On"){
-    operacion = 0;
-    operador = 0;
-    $("#display").html(operacion);
+    resultadoOperacion = 0;
+    primerNumero = 0;
+    segundoNumero = 0;
+    operacion = false;
+    cantOper = 0;
+    mostrarPantalla()
   }else if(alt=="signo"){
-    operador = parseFloat(operador)*(-1);
-    $("#display").html(operador);
+    if(primerNumero!=0){
+      resultadoOperacion = parseFloat(resultadoOperacion)*(-1);
+      mostrarPantalla()
+    }
   }else if(alt=="raiz"){
     alert("Esta función todavía no está implementada en esta calculadora");
   }else if(alt=="dividido"){
-    guardarOperacion(alt);
+    realizarOperacion(alt);
   }else if(alt=="menos"){
-    guardarOperacion(alt);
+    realizarOperacion(alt);
   }else if(alt=="por"){
-    guardarOperacion(alt);
+    realizarOperacion(alt);
   }else if(alt=="mas"){
-    guardarOperacion(alt);
+    realizarOperacion(alt);
   }else if(alt=="igual"){
-    display(tipoOperacion);
-    $("#display").html(operacion);
-    tipoOperacion = "";
+    mostrarPantalla();
   }else if(alt=="punto"){
-    if(operador.indexOf(".")==-1)
-      operador = operador+".";
-    $("#display").html(operador);
+    if(resultadoOperacion.indexOf(".")==-1){
+      resultadoOperacion = resultadoOperacion+".";
+      mostrarPantalla();
+    }
   }else{
-    if(botonOperacion){
-      if(operador.toString().length < 8 ){
-        if(operador==0)
-          operador = alt;
-        else
-          operador = operador +""+ alt;
+    cantOper = 0;
+    if(!operacion){
+      if(primerNumero.toString().length < 8 ){
+        primerNumero = agregarNumCalculadora(primerNumero,alt);
+        $("#display").html(primerNumero);
       }
     }else{
-      operador = alt;
-      botonOperacion = true;
+      if(segundoNumero.toString().length < 8 ){
+        segundoNumero = agregarNumCalculadora(segundoNumero,alt);
+        $("#display").html(segundoNumero);
+      }
     }
-
-    $("#display").html(operador);
   }
+}
+
+function agregarNumCalculadora(numCal, num){
+  if(numCal==0)
+    numCal = num;
+  else
+    numCal = numCal +""+ num;
+
+  return numCal;
+}
+
+function realizarOperacion(tO){
+  var res = 0;
+  operacion = true;
+  tipoOperacion = tO;
+
+  if(cantOper>1){
+    cantOper++;
+    return;
+  }
+
+  if (tipoOperacion=="mas"){
+    res = Calculadora.operacionSumar(parseFloat(primerNumero),parseFloat(segundoNumero));
+  }else if (tipoOperacion=="menos"){
+    res = Calculadora.operacionRestar(parseFloat(primerNumero),parseFloat(segundoNumero));
+  }
+
+  if(primerNumero!=0){
+    if (tipoOperacion=="por"){
+      res = Calculadora.operacionMultiplicar(parseFloat(primerNumero),parseFloat(segundoNumero));
+    }else if (tipoOperacion=="dividido"){
+      if(segundoNumero!=0)
+        res = Calculadora.operacionDividir(parseFloat(primerNumero),parseFloat(segundoNumero));
+      else {
+        alert("Esta operación no se pued realizar");
+        return;
+      }
+    }
+  }else
+    alert("La operación seleccionada no se puede realizar");
+
+  if(res.toString().length < 8 ){
+    resultadoOperacion = res;
+    primerNumero = resultadoOperacion;
+    segundoNumero = 0;
+    mostrarPantalla();
+    tipoOperacion = tO;
+  }else
+    alert("La operación realizada da como resultado un número con longitud mayor a la permitida en esta calculadora por lo tanto no se puede realizar");
 }
 
 function mostrarPantalla(){
-  botonOperacion = false;
-  operador = 0;
-  if(operacion!=0)
-    $("#display").html(operacion);
-}
-
-function guardarOperacion(tO){
-  tipoOperacion = tO;
-  if(operacion==0){
-    if (tO=="mas")
-      operacion = Calculadora.operacionSumar(parseFloat(operacion),parseFloat(operador));
-    else if (tO=="menos")
-      operacion = Calculadora.operacionRestar(parseFloat(operacion),parseFloat(operador));
-    /*else if (tO=="por")
-      operacion = Calculadora.operacionMultiplicar(parseFloat(operacion),parseFloat(operador));
-    else if (tO=="dividido")
-      operacion = Calculadora.operacionDividir(parseFloat(operacion),parseFloat(operador));*/
-    botonOperacion = false;
-  }else{
-    if (tO=="mas")
-      operacion = Calculadora.operacionSumar(parseFloat(operacion),parseFloat(operador));
-    else if (tO=="menos")
-      operacion = Calculadora.operacionRestar(parseFloat(operacion),parseFloat(operador));
-    else if (tO=="por")
-      operacion = Calculadora.operacionMultiplicar(parseFloat(operacion),parseFloat(operador));
-    else if (tO=="dividido")
-      operacion = Calculadora.operacionDividir(parseFloat(operacion),parseFloat(operador));
-    mostrarPantalla();
-  }
+  $("#display").html(resultadoOperacion);
 }
