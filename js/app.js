@@ -3,7 +3,8 @@ var primerNumero = 0;
 var segundoNumero = 0;
 var operacion = false;
 var tipoOperacion = "";
-var cantOper = 0;
+var tipoOperacionAnterior = "";
+var primeraOperacion = false;
 
 var Calculadora = ( function(){
   var sumar = function( n1, n2 ){
@@ -79,7 +80,8 @@ function display(alt){
     primerNumero = 0;
     segundoNumero = 0;
     operacion = false;
-    cantOper = 0;
+    tipoOperacion = "";
+    tipoOperacionAnterior = "";
     mostrarPantalla()
   }else if(alt=="signo"){
     if(primerNumero!=0){
@@ -88,24 +90,19 @@ function display(alt){
     }
   }else if(alt=="raiz"){
     alert("Esta función todavía no está implementada en esta calculadora");
-  }else if(alt=="dividido"){
-    realizarOperacion(alt);
-  }else if(alt=="menos"){
-    realizarOperacion(alt);
-  }else if(alt=="por"){
-    realizarOperacion(alt);
-  }else if(alt=="mas"){
-    realizarOperacion(alt);
+  }else if(alt=="dividido" || alt=="menos" || alt=="por" || alt=="mas"){
+    tipoOperacion = alt;
+    operacion = true;
+    realizarOperacion();
   }else if(alt=="igual"){
-    mostrarPantalla();
+    realizarOperacion();
   }else if(alt=="punto"){
     if(resultadoOperacion.indexOf(".")==-1){
       resultadoOperacion = resultadoOperacion+".";
       mostrarPantalla();
     }
   }else{
-    cantOper = 0;
-    if(!operacion){
+    if(!primeraOperacion){
       if(primerNumero.toString().length < 8 ){
         primerNumero = agregarNumCalculadora(primerNumero,alt);
         $("#display").html(primerNumero);
@@ -125,29 +122,27 @@ function agregarNumCalculadora(numCal, num){
   else
     numCal = numCal +""+ num;
 
+  operacion = false;
+
   return numCal;
 }
 
-function realizarOperacion(tO){
+function realizarOperacion(){
   var res = 0;
-  operacion = true;
-  tipoOperacion = tO;
 
-  if(cantOper>1){
-    cantOper++;
-    return;
-  }
+  if(!primeraOperacion)
+    primeraOperacion = true;
 
-  if (tipoOperacion=="mas"){
+  if (tipoOperacionAnterior=="mas"){
     res = Calculadora.operacionSumar(parseFloat(primerNumero),parseFloat(segundoNumero));
-  }else if (tipoOperacion=="menos"){
+  }else if (tipoOperacionAnterior=="menos"){
     res = Calculadora.operacionRestar(parseFloat(primerNumero),parseFloat(segundoNumero));
   }
 
   if(primerNumero!=0){
-    if (tipoOperacion=="por"){
+    if (tipoOperacionAnterior=="por"){
       res = Calculadora.operacionMultiplicar(parseFloat(primerNumero),parseFloat(segundoNumero));
-    }else if (tipoOperacion=="dividido"){
+    }else if (tipoOperacionAnterior=="dividido"){
       if(segundoNumero!=0)
         res = Calculadora.operacionDividir(parseFloat(primerNumero),parseFloat(segundoNumero));
       else {
@@ -160,10 +155,15 @@ function realizarOperacion(tO){
 
   if(res.toString().length < 8 ){
     resultadoOperacion = res;
-    primerNumero = resultadoOperacion;
     segundoNumero = 0;
-    mostrarPantalla();
-    tipoOperacion = tO;
+    if(resultadoOperacion!=0){
+      mostrarPantalla();
+      primerNumero = resultadoOperacion;
+    }
+
+    tipoOperacionAnterior = tipoOperacion;
+    tipoOperacion = "";
+    operacion = false;
   }else
     alert("La operación realizada da como resultado un número con longitud mayor a la permitida en esta calculadora por lo tanto no se puede realizar");
 }
