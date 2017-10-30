@@ -84,10 +84,9 @@ function display(alt){
     tipoOperacionAnterior = "";
     mostrarPantalla()
   }else if(alt=="signo"){
-    if(primerNumero!=0){
-      resultadoOperacion = parseFloat(resultadoOperacion)*(-1);
-      mostrarPantalla()
-    }
+    var numeroDisplay = $("#display").text();
+    numeroDisplay = parseFloat(numeroDisplay)*(-1);
+    $("#display").html(numeroDisplay);
   }else if(alt=="raiz"){
     alert("Esta función todavía no está implementada en esta calculadora");
   }else if(alt=="dividido" || alt=="menos" || alt=="por" || alt=="mas"){
@@ -97,9 +96,20 @@ function display(alt){
   }else if(alt=="igual"){
     realizarOperacion();
   }else if(alt=="punto"){
-    if(resultadoOperacion.indexOf(".")==-1){
-      resultadoOperacion = resultadoOperacion+".";
-      mostrarPantalla();
+    if(!primeraOperacion){
+      if(primerNumero!=0){
+        if(primerNumero.toString().indexOf(".")==-1){
+          primerNumero = primerNumero+".";
+          $("#display").html(primerNumero);
+        }
+      }
+    }else{
+      if(segundoNumero!=0){
+        if(segundoNumero.toString().indexOf(".")==-1){
+          segundoNumero = segundoNumero+".";
+          $("#display").html(segundoNumero);
+        }
+      }
     }
   }else{
     if(!primeraOperacion){
