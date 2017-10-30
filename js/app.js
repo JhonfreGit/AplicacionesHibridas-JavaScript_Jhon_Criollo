@@ -140,28 +140,23 @@ function agregarNumCalculadora(numCal, num){
 function realizarOperacion(){
   var res = 0;
 
-  if(!primeraOperacion)
-    primeraOperacion = true;
-
   if (tipoOperacionAnterior=="mas"){
     res = Calculadora.operacionSumar(parseFloat(primerNumero),parseFloat(segundoNumero));
   }else if (tipoOperacionAnterior=="menos"){
     res = Calculadora.operacionRestar(parseFloat(primerNumero),parseFloat(segundoNumero));
-  }
-
-  if(primerNumero!=0){
-    if (tipoOperacionAnterior=="por"){
+  }else if (tipoOperacionAnterior=="por"){
+    if(primerNumero!=0)
       res = Calculadora.operacionMultiplicar(parseFloat(primerNumero),parseFloat(segundoNumero));
-    }else if (tipoOperacionAnterior=="dividido"){
-      if(segundoNumero!=0)
-        res = Calculadora.operacionDividir(parseFloat(primerNumero),parseFloat(segundoNumero));
-      else {
-        alert("Esta operación no se pued realizar");
-        return;
-      }
+    else
+      alert("La operación seleccionada no se puede realizar");
+  }else if (tipoOperacionAnterior=="dividido"){
+    if(segundoNumero!=0)
+      res = Calculadora.operacionDividir(parseFloat(primerNumero),parseFloat(segundoNumero));
+    else {
+      alert("Esta operación no se puede realizar");
+      return;
     }
-  }else
-    alert("La operación seleccionada no se puede realizar");
+  }
 
   if(res.toString().length < 8 ){
     resultadoOperacion = res;
@@ -169,7 +164,15 @@ function realizarOperacion(){
     if(resultadoOperacion!=0){
       mostrarPantalla();
       primerNumero = resultadoOperacion;
+    }else{
+      if(primeraOperacion){
+        mostrarPantalla();
+        primerNumero = resultadoOperacion;
+      }
     }
+
+    if(!primeraOperacion)
+      primeraOperacion = true;
 
     tipoOperacionAnterior = tipoOperacion;
     tipoOperacion = "";
